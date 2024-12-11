@@ -96,4 +96,9 @@ class GuestViewModel: ObservableObject {
         }
     }
     
+    func resetUserLocation() {
+        guestFilter.defaultLocation = nil
+        guestFilter.isNearBy = false
+    }
+    
 }

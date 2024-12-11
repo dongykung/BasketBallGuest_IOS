@@ -31,15 +31,19 @@ struct GuestListView: View {
     var body: some View {
         ScrollView {
             LazyVStack(pinnedViews: [.sectionHeaders]) {
-                ForEach(viewModel.guestPost, id: \.documentId) { post in
-                    GuestListItemView(post: post) {
-                        path.append(post)
+                if viewModel.guestPost.isEmpty {
+                    Text("결과가 없습니다.")
+                } else {
+                    ForEach(viewModel.guestPost, id: \.documentId) { post in
+                        GuestListItemView(post: post) {
+                            path.append(post)
+                        }
+                        .onAppear {
+                            viewModel.loadMoreIfNeeded(currentPost: post)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 6)
                     }
-                    .onAppear {
-                        viewModel.loadMoreIfNeeded(currentPost: post)
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
                 }
             }
             .padding(.top, headerHeight)
@@ -85,7 +89,7 @@ struct GuestListView: View {
             DatePickerSheet(bindingDate: $viewModel.guestFilter.selectedDate) {
                 viewModel.setfilterDate()
             }
-            .presentationDetents([.fraction(0.6), .fraction(0.7)])
+            .presentationDetents([.fraction(0.6)])
             .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $isPositionFilterSheet) {
@@ -116,7 +120,13 @@ struct GuestListView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 12) {
                 Button {
-                    checkLocationAuthorization()
+                    if viewModel.guestFilter.isNearBy {
+                        viewModel.resetUserLocation()
+                        viewModel.setfilterDate()
+                    } else {
+                        viewModel.guestFilter.isNearBy = true
+                        checkLocationAuthorization()
+                    }
                 } label: {
                     Label("내 주변", systemImage: "mappin.and.ellipse.circle")
                         .filterLabelStyle(selected: viewModel.guestFilter.isNearBy)
@@ -147,8 +157,8 @@ struct GuestListView: View {
         locationStore.checkLocationAuthorization()
         if [.authorizedAlways, .authorizedWhenInUse].contains(where: { $0 == locationStore.authorizationStatus }) {
             if let userLocation = locationStore.userLocation {
-                print(userLocation.latitude)
-                print(userLocation.longitude)
+                viewModel.guestFilter.defaultLocation = userLocation
+                viewModel.setfilterDate()
             } else {
                 locationStore.toast = Toast(style: .warning, message: "위치 정보를 가져오고 있습니다, 잠시 후 재시도 해주세요.")
             }

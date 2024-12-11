@@ -19,16 +19,20 @@ struct GuestView: View {
                 switch viewModel.loadState {
                 case .none, .completed:
                     GuestListView(path: $path, viewModel: viewModel)
+                        .transition(.opacity)
                 case .loading:
                     LoadingView()
+                        .transition(.opacity)
                 case .failed:
                     ErrorView {
                         Task {
                             await viewModel.fetchGuestPost()
                         }
                     }
+                    .transition(.opacity)
                 }
             }
+            .animation(.smooth, value: viewModel.loadState)
             .navigationTitle("게스트")
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $isCreateGuest) {

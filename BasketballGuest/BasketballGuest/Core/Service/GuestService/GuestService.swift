@@ -46,13 +46,17 @@ final class GuestServiceImpl: GuestService {
             .limit(to: filter.limit)
         
         if filter.isNearBy, let center = filter.defaultLocation {
-            print("지역필터 추가")
+            print("현재 내위치 = \(center.latitude), \(center.longitude)")
             let bounds = calculateCoordinateBounds(center: center, radiusInMeters: filter.radiusInMeters)
+            print("maxLatitude = \(bounds.maxLatitude)")
+            print("minLatitude = \(bounds.minLatitude)")
+            print("maxLongitude = \(bounds.maxLongitude)")
+            print("minLongitude = \(bounds.minLongitude)")
             query = query
-                .whereField("longitude", isGreaterThanOrEqualTo: bounds.minLongitude)
-                .whereField("longitude", isLessThanOrEqualTo: bounds.maxLongitude)
-                .whereField("latitude", isGreaterThanOrEqualTo: bounds.minLatitude)
-                .whereField("latitude", isLessThanOrEqualTo: bounds.maxLatitude)
+                .whereField("lng", isGreaterThanOrEqualTo: bounds.minLongitude)
+                .whereField("lng", isLessThanOrEqualTo: bounds.maxLongitude)
+                .whereField("lat", isGreaterThanOrEqualTo: bounds.minLatitude)
+                .whereField("lat", isLessThanOrEqualTo: bounds.maxLatitude)
         }
         
         if let date = filter.selectedDate {
