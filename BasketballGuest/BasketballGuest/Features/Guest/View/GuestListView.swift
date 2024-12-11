@@ -11,6 +11,7 @@ struct GuestListView: View {
     
     @Binding private var path: NavigationPath
     @ObservedObject private var viewModel: GuestViewModel
+    @EnvironmentObject private var locationStore: LocationStore
     
     @State private var headerHeight: CGFloat = 0
     @State private var headerOffset: CGFloat = 0
@@ -20,6 +21,7 @@ struct GuestListView: View {
     
     @State private var isDateFilterSheet: Bool = false
     @State private var isPositionFilterSheet: Bool = false
+    @State private var isAppSettingAlert: Bool = false
     
     init(path: Binding<NavigationPath>, viewModel: GuestViewModel) {
         self._path = path
@@ -93,6 +95,20 @@ struct GuestListView: View {
             .presentationDetents([.fraction(0.6), .fraction(0.7)])
             .presentationDragIndicator(.hidden)
         }
+        .alert(isPresented: $locationStore.rejectAlert) {
+            Alert(
+                title: Text("위치권한 변경"),
+                message: Text("사용자 위치 기반 데이터를 호출하기 위해 위치 권한이 필요합니다\n허용하러 이동하시겠습니까?"),
+                primaryButton: .default(Text("이동하기")) {
+                    if let appSettings = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(appSettings)
+                    }
+                },
+                secondaryButton: .destructive(Text("취소")) {
+                    locationStore.rejectAlert = false
+                })
+        }
+        .toastView(toast: $locationStore.toast)
     }
     
     @ViewBuilder
@@ -100,7 +116,7 @@ struct GuestListView: View {
         ScrollView(.horizontal) {
             HStack(spacing: 12) {
                 Button {
-                    
+                    checkLocationAuthorization()
                 } label: {
                     Label("내 주변", systemImage: "mappin.and.ellipse.circle")
                         .filterLabelStyle(selected: viewModel.guestFilter.isNearBy)
@@ -124,6 +140,18 @@ struct GuestListView: View {
             .background(.clear)
             .padding(.horizontal)
             .padding(.vertical, 8)
+        }
+    }
+    
+    func checkLocationAuthorization() {
+        locationStore.checkLocationAuthorization()
+        if [.authorizedAlways, .authorizedWhenInUse].contains(where: { $0 == locationStore.authorizationStatus }) {
+            if let userLocation = locationStore.userLocation {
+                print(userLocation.latitude)
+                print(userLocation.longitude)
+            } else {
+                locationStore.toast = Toast(style: .warning, message: "위치 정보를 가져오고 있습니다, 잠시 후 재시도 해주세요.")
+            }
         }
     }
 }
