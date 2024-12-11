@@ -3,6 +3,7 @@
 
 *.xcconfig
 GoogleService-Info.plist
+*.DS_Store
 ### Firebase ###
 .idea
 **/node_modules/*
