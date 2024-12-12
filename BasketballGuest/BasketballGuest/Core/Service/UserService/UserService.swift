@@ -11,6 +11,7 @@ import Foundation
 
 protocol UserService {
     func uploadUserData(user: UserDTO) async throws
+    func fetchUserData(userId: String) async throws -> UserDTO
 }
 
 final class UserServiceImpl: UserService {
@@ -28,5 +29,20 @@ final class UserServiceImpl: UserService {
             throw error
         }
     }
+    
+    func fetchUserData(userId: String) async throws -> UserDTO {
+        do {
+            let document =  try await db.collection("User").document(userId).getDocument()
+            
+            guard document.exists else {
+                throw UserError.userNotFound
+            }
+            
+            return try document.data(as: UserDTO.self)
+        } catch let error {
+            throw error
+        }
+    }
+    
 }
-
+    
