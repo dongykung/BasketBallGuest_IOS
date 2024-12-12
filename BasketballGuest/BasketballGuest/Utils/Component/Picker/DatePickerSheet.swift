@@ -35,6 +35,9 @@ struct DatePickerSheet: View {
             
             DatePicker("날짜", selection: $date,in: Date()..., displayedComponents: .date)
                 .datePickerStyle(.graphical)
+                .labelsHidden()
+        
+            Spacer()
         }
     }
 }
