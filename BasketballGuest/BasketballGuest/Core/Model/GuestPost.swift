@@ -7,6 +7,7 @@
 
 import FirebaseFirestore
 import Foundation
+import CoreLocation
 
 struct GuestPost: Codable, Hashable {
     @DocumentID var documentId: String?
@@ -24,4 +25,8 @@ struct GuestPost: Codable, Hashable {
     let placeAddress: String
     let parkFlag: String?
     let currentMemberCount: Int?
+    
+    var location: CLLocationCoordinate2D {
+        .init(latitude: lat, longitude: lng)
+    }
 }
