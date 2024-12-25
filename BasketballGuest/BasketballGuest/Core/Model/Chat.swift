@@ -12,7 +12,7 @@ struct Chat: Codable {
     @DocumentID var id: String?
     var message: String
     var sender: String //보낸 사람의 uid
-    var readCount: Int = 1 //읽은 사람 카운트 수
+    var readBy: [String] //읽은 사람 uid
     var createAt: Date = Date()
 }
 
