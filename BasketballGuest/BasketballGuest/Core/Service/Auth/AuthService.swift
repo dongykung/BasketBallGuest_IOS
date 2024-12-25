@@ -13,6 +13,7 @@ protocol AuthService {
     func isExistUser(uid: String) async throws -> Bool
     func isNicknameAvailable(nickName: String) async throws -> Bool
     func signInWithGoogle() async throws -> String
+    func signInWithKakao() async throws -> String
 }
 
 final class AuthServiceImpl: AuthService {
