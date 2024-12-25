@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+protocol ChatService {
+    
+}
+
+class ChatServiceImpl: ChatService {
+    
+}
