@@ -28,4 +28,11 @@ extension Date {
         formatter.dateFormat = "MM.dd"
         return formatter.string(from: self)
     }
+    
+    var guestFullTimeFormatted: String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "YYYY.MM.dd EEEE a h:mm"
+        return formatter.string(from: self)
+    }
 }
