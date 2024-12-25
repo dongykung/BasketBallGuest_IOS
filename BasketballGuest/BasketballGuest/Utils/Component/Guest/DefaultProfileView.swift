@@ -8,11 +8,40 @@
 import SwiftUI
 
 struct DefaultProfileView: View {
+    let profileUrl: String?
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        if let profile = profileUrl {
+            AsyncImage(url: URL(string: profile)) { phase in
+                switch phase {
+                case .empty:
+                    Image(.user)
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(.circle)
+                        .frame(width: 40, height: 40)
+                case .failure:
+                    Image(.user)
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                @unknown default:
+                    Image(.user)
+                        .resizable()
+                        .frame(width: 40, height: 40)
+                }
+            }
+           
+        } else {
+            Image(.user)
+                .resizable()
+                .frame(width: 40, height: 40)
+        }
     }
 }
 
 #Preview {
-    DefaultProfileView()
+    DefaultProfileView(profileUrl: nil)
 }
