@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import FirebaseAuth
 
 struct GuestDetailView: View {
     
@@ -121,14 +122,18 @@ struct UserInfoSection: View {
                     action(userDTO)
                 }
             } label: {
-                Text("채팅")
-                    .foregroundStyle(.blue)
-                    .padding(.horizontal,8)
-                    .padding(.vertical,6)
-                    .background(Color(uiColor: .systemGray6))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if userData == nil {
+                    ProgressView()
+                } else {
+                    Text("채팅")
+                        .foregroundStyle(.blue)
+                        .padding(.horizontal,8)
+                        .padding(.vertical,6)
+                        .background(Color(uiColor: .systemGray6))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
             }
-            .disabled(userData == nil)
+            .disabled(userData == nil || Auth.auth().currentUser?.uid == userData?.id)
         }
         .padding(.horizontal)
     }
