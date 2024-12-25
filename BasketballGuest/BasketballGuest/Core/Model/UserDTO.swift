@@ -8,8 +8,8 @@
 import FirebaseFirestore
 import Foundation
 
-struct UserDTO: Codable {
-    @DocumentID var documentId: String?
+struct UserDTO: Codable, Identifiable {
+    @DocumentID var id: String?
     var nickName: String
     var height: Int?
     var weight: Int?
