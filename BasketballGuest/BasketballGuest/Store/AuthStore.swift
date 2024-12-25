@@ -54,4 +54,14 @@ class AuthStore: ObservableObject {
             authState = .unAuthenticated
         }
     }
+    
+    @MainActor
+    func logout()  {
+        do {
+            try Auth.auth().signOut()
+            authState = .unAuthenticated
+        } catch {
+            
+        }
+    }
 }
