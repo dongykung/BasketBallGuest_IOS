@@ -63,6 +63,7 @@ struct GuestDetailView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
+                            .foregroundStyle(.basic)
                             .bold()
                     }
                 }
