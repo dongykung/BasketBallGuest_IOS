@@ -17,3 +17,9 @@ struct Chat: Codable {
 }
 
 let MAXREADCOUNT: Int = 2
+
+struct ChatSection: Identifiable {
+    let id: Date
+    let date: Date
+    var chats: [Chat]
+}

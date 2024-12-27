@@ -15,3 +15,9 @@ struct ChatRoom: Codable, Identifiable {
     var lastMessageAt: Date
     var readStatus: [String: Date] // 각 참가자의 마지막 읽은 메시지 시점
 }
+
+struct ChatRoomWithUser: Codable {
+    var chatRoom: ChatRoom
+    var user: UserDTO
+    var unReadCount: Int
+}
