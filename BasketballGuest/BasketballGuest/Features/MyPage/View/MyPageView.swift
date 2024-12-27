@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct MyPageView: View {
+    @EnvironmentObject private var authStore: AuthStore
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button {
+            authStore.logout()
+        } label: {
+            Text("logout")
+        }
     }
 }
 
 #Preview {
     MyPageView()
+        .environmentObject(AuthStore())
 }
