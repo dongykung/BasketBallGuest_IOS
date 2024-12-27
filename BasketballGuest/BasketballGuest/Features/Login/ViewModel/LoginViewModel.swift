@@ -33,8 +33,17 @@ class LoginViewModel: ObservableObject {
         }
     }
     
-    func kakaoLogin() {
+    @MainActor
+    func kakaoLogin() async {
         loadState = .loading
+        do {
+            _ = try await authService.signInWithKakao()
+            loadState = .completed
+            try await authStore.login()
+        } catch {
+            showToastMessage(msg: "로그인에 실패했습니다. 다시 시도해 주세요.")
+            loadState = .failed
+        }
     }
     
     func showToastMessage(msg: String) {

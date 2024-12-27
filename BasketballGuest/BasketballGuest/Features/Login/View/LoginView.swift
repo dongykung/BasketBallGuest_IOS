@@ -25,7 +25,9 @@ struct LoginView: View {
                     
                     
                     SocialButton(socialType: .kakao) {
-                        viewModel.kakaoLogin()
+                        Task {
+                            await viewModel.kakaoLogin()
+                        }
                     }
                     
                     SocialButton(socialType: .google) {
