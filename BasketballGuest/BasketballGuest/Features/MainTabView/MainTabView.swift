@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct MainTabView: View {
+    
+    @StateObject private var chatRoomStore: ChatRoomStore = ChatRoomStore()
+    
     var body: some View {
         TabView {
             GuestView()
@@ -19,9 +22,11 @@ struct MainTabView: View {
             
             ChatRoomListView()
                 .tabItem {
-                    Label("채팅", systemImage: "bubble")
+                    Label("채팅", systemImage: "message.badge.rtl")
                         .bold()
                 }
+                .badge(chatRoomStore.totalUnreadCount)
+                .environmentObject(chatRoomStore)
             
             
             MyPageView()
