@@ -21,6 +21,23 @@ class ChatDetailViewModel: ObservableObject {
     @Published var loadState: LoadState = .completed
     @Published var toast: Toast?
     
+    var groupedChatsByDate: [ChatSection] {
+        let calendar = Calendar.current
+        var sections: [ChatSection] = []
+        
+        for chat in chats {
+            let chatDate = calendar.startOfDay(for: chat.createAt)
+            
+            if let lastSection = sections.last, lastSection.date == chatDate {
+                sections[sections.count - 1].chats.append(chat)
+            } else {
+                let newSection = ChatSection(id: chatDate, date: chatDate, chats: [chat])
+                sections.append(newSection)
+            }
+        }
+        return sections
+    }
+    
     init() {
         print("ChatDetailViewModel init")
     }

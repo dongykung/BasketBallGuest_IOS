@@ -29,11 +29,13 @@ struct ChatDetailView: View {
                     .transition(.opacity)
             case .failed:
                 ErrorView {
-                    
+                    Task {
+                        await viewModel.initChatRoom(chatUserUid: chatUser.id ?? "")
+                    }
                 }
                 .transition(.opacity)
             case .completed:
-                ChatListView(text: $viewModel.text, chatList: viewModel.chats) { msg in
+                ChatListView(text: $viewModel.text, chatUser: chatUser, chatList: viewModel.groupedChatsByDate) { msg in
                     Task {
                         await viewModel.sendMessage(chatUserUid: chatUser.id ?? "")
                         viewModel.text = ""
@@ -42,6 +44,7 @@ struct ChatDetailView: View {
                 .transition(.opacity)
             }
         }
+        .navigationBarBackButtonHidden()
         .task {
             await viewModel.initChatRoom(chatUserUid: chatUser.id ?? "")
         }
@@ -54,19 +57,33 @@ fileprivate struct ChatListView: View {
     
     @State var height: CGFloat = 0
     @Binding var text: String
-    let chatList: [Chat]
+    let chatUser: UserDTO
+    let chatList: [ChatSection]
     let send: (String) -> Void
     
     var body: some View {
         VStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    ForEach(chatList, id: \.id) { chat in
-                        Text(chat.message)
+                    LazyVStack {
+                        ForEach(chatList) { section in
+                            Text(section.date.chatSectionFormatted)
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .padding(.vertical, 8)
+                                .frame(maxWidth: .infinity)
+                                .background(Color(UIColor.systemBackground))
+                            
+                            ForEach(section.chats, id: \.id) { chat in
+                                ChatItemView(chat: chat, chatUser: chatUser)
+                                    .padding(.vertical, 6)
+                                    .padding(.horizontal, 8)
+                                    .id(chat.id)
+                            }
+                        }
                     }
                 }
             }
-            
             Spacer()
             Divider()
             HStack(alignment: .bottom) {
@@ -104,6 +121,74 @@ fileprivate struct ChatListView: View {
         }
         .onTapGesture {
             UIApplication.shared.endEditing()
+        }
+    }
+}
+
+fileprivate struct ChatItemView: View {
+    
+    let chat: Chat
+    let chatUser: UserDTO
+    
+    var body: some View {
+        if chat.sender == chatUser.id {
+            OtherChat(chat: chat)
+        } else {
+            MyChat(chat: chat, chatUser: chatUser)
+        }
+    }
+}
+
+fileprivate struct MyChat: View {
+    
+    let chat: Chat
+    let chatUser: UserDTO
+    
+    var body: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing) {
+                if !chat.readBy.contains(where: { $0 == chatUser.id }) {
+                    Text("1")
+                        .transition(.opacity)
+                        .font(.caption)
+                        .foregroundStyle(.accent)
+
+                }
+                Text(chat.createAt.chatTimeFormatted)
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            .animation(.smooth, value: chat.readBy)
+            Text(chat.message)
+                .foregroundStyle(.basic)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.accent.opacity(0.7))
+                .clipShape(.rect(cornerRadius: 12))
+        }
+    }
+}
+
+fileprivate struct OtherChat: View {
+    
+    let chat: Chat
+    
+    var body: some View {
+        HStack {
+            Text(chat.message)
+                .foregroundStyle(.basic)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color(uiColor: .systemGray6))
+                .clipShape(.rect(cornerRadius: 12))
+            VStack(alignment: .leading) {
+                Spacer()
+                Text(chat.createAt.chatTimeFormatted)
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            Spacer()
         }
     }
 }
