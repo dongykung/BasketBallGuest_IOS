@@ -28,6 +28,9 @@ struct ResizableTextField: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UITextView, context: Context) {
+        if self.text.isEmpty  {
+            uiView.text = ""
+        }
         DispatchQueue.main.async {
             self.height = uiView.contentSize.height
         }
