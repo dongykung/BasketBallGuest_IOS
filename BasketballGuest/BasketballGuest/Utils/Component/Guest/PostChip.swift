@@ -13,12 +13,7 @@ struct PostChip: View {
     
     var body: some View {
         Text(position.rawValue)
-            .foregroundStyle(.accent)
-            .font(.semibold12)
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(.chipbackground)
-            .clipShape(.rect(cornerRadius: 16))
+            .modifier(ChipModifier())
     }
 }
 
