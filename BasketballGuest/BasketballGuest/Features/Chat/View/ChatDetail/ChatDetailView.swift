@@ -35,7 +35,7 @@ struct ChatDetailView: View {
                 }
                 .transition(.opacity)
             case .completed:
-                ChatListView(text: $viewModel.text, chatUser: chatUser, chatList: viewModel.groupedChatsByDate) { msg in
+                ChatListView(text: $viewModel.text, chatUser: chatUser, chat: viewModel.chats, chatList: viewModel.groupedChatsByDate) { msg in
                     Task {
                         await viewModel.sendMessage(chatUserUid: chatUser.id ?? "")
                         viewModel.text = ""
@@ -58,6 +58,7 @@ fileprivate struct ChatListView: View {
     @State var height: CGFloat = 0
     @Binding var text: String
     let chatUser: UserDTO
+    let chat: [Chat]
     let chatList: [ChatSection]
     let send: (String) -> Void
     
@@ -81,7 +82,14 @@ fileprivate struct ChatListView: View {
                                     .id(chat.id)
                             }
                         }
+                        Rectangle()
+                            .foregroundStyle(Color.clear)
+                            .frame(height: 1)
+                            .id("Bottom")
                     }
+                }
+                .onChange(of: chat.count) { _ in
+                    proxy.scrollTo("Bottom", anchor: .bottom)
                 }
             }
             Spacer()
@@ -147,17 +155,19 @@ fileprivate struct MyChat: View {
     var body: some View {
         HStack {
             Spacer()
-            VStack(alignment: .trailing) {
+            VStack(alignment: .trailing, spacing: 0) {
                 if !chat.readBy.contains(where: { $0 == chatUser.id }) {
                     Text("1")
                         .transition(.opacity)
                         .font(.caption)
                         .foregroundStyle(.accent)
-
+                        .offset(y: 3)
                 }
+                Spacer()
                 Text(chat.createAt.chatTimeFormatted)
                     .font(.caption)
                     .foregroundStyle(.gray)
+                    .frame(alignment: .bottom)
             }
             .animation(.smooth, value: chat.readBy)
             Text(chat.message)
