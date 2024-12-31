@@ -6,3 +6,8 @@
 //
 
 import Foundation
+import FirebaseAuth
+
+func getMyUid() -> String? {
+    return Auth.auth().currentUser?.uid
+}
