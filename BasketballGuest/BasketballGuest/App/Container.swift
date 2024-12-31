@@ -24,4 +24,8 @@ extension Container {
     var guestService: Factory<GuestService> {
         Factory(self) { GuestServiceImpl() }
     }
+    
+    var guestDetailService: Factory<GuestDetailService> {
+        Factory(self) { GuestDetailServiceImpl() }
+    }
 }
