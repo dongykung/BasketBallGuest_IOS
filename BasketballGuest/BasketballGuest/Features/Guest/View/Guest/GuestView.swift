@@ -39,7 +39,7 @@ struct GuestView: View {
                 CreateGuestContainerView()
             }
             .navigationDestination(for: GuestPost.self) { post in
-                GuestDetailView(viewModel: .init(path: path), post: post)
+                GuestDetailView(viewModel: .init(path: path, post: post))
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

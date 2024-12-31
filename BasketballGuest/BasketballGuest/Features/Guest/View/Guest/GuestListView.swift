@@ -67,6 +67,12 @@ struct GuestListView: View {
                 }
             }
         }
+        .refreshable {
+            Task {
+                viewModel.resetPaging()
+                await viewModel.fetchGuestPost()
+            }
+        }
         .coordinateSpace(name: "SCROLL")
         .overlay(alignment: .top) {
             headerView
