@@ -21,13 +21,12 @@ struct DefaultProfileView: View {
             AsyncImage(url: URL(string: profile)) { phase in
                 switch phase {
                 case .empty:
-                    Image(.user)
-                        .resizable()
+                    ProgressView()
                         .frame(width: frame, height: frame)
                 case .success(let image):
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .aspectRatio(contentMode: .fill)
                         .clipShape(.circle)
                         .frame(width: frame, height: frame)
                 case .failure:
@@ -35,8 +34,7 @@ struct DefaultProfileView: View {
                         .resizable()
                         .frame(width: frame, height: frame)
                 @unknown default:
-                    Image(.user)
-                        .resizable()
+                    ProgressView()
                         .frame(width: frame, height: frame)
                 }
             }
@@ -44,7 +42,8 @@ struct DefaultProfileView: View {
         } else {
             Image(.user)
                 .resizable()
-                .frame(width: 40, height: 40)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: frame, height: frame)
         }
     }
 }
