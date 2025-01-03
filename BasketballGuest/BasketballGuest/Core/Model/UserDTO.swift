@@ -13,6 +13,6 @@ struct UserDTO: Codable, Identifiable {
     var nickName: String
     var height: Int?
     var weight: Int?
-    var positions: [String]
+    var positions: [Position]
     var profileImageUrl: String?
 }
