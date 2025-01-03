@@ -11,26 +11,38 @@ struct ChatRoomListView: View {
     @EnvironmentObject private var chatRoomStore: ChatRoomStore
     var body: some View {
         NavigationStack {
-            ScrollView {
-                switch chatRoomStore.loadState {
-                case .loading:
-                    LoadingView()
-                case .completed:
-                    LazyVStack {
-                        ForEach(chatRoomStore.chatRooms, id: \.chatRoom.id) { chatRoomWithUser in
-                            ChatListItemView(chatRoomWithUser: chatRoomWithUser)
-                                .padding(.vertical, 12)
+            VStack(spacing: 0) {
+                topBar
+                Divider()
+                    .shadow(radius: 2)
+                ScrollView {
+                    switch chatRoomStore.loadState {
+                    case .loading:
+                        LoadingView()
+                    case .completed:
+                        LazyVStack {
+                            ForEach(chatRoomStore.chatRooms, id: \.chatRoom.id) { chatRoomWithUser in
+                                ChatListItemView(chatRoomWithUser: chatRoomWithUser)
+                                    .padding(.vertical, 12)
+                            }
                         }
-                    }
-                case .none, .failed:
-                    ErrorView {
-                        chatRoomStore.observeChatRoomList()
+                    case .none, .failed:
+                        ErrorView {
+                            chatRoomStore.observeChatRoomList()
+                        }
                     }
                 }
             }
-            .navigationTitle("채팅")
-            .navigationBarTitleDisplayMode(.inline)
         }
+    }
+    @ViewBuilder
+    var topBar: some View {
+        HStack {
+            Text("채팅")
+                .font(.semibold16)
+            Spacer()
+        }
+        .padding()
     }
 }
 
@@ -43,7 +55,7 @@ fileprivate struct ChatListItemView: View {
             ChatDetailView(chatUser: chatRoomWithUser.user)
         } label: {
             HStack {
-                DefaultProfileView(profileUrl: chatRoomWithUser.user.profileImageUrl, frame: 85)
+                DefaultProfileView(profileUrl: chatRoomWithUser.user.profileImageUrl, frame: 55)
                     .padding(.trailing, 6)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
