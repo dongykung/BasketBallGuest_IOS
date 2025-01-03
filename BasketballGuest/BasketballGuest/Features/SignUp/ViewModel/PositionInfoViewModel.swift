@@ -9,7 +9,7 @@ import Foundation
 
 class PositionInfoViewModel: ObservableObject {
     
-    @Published var positions: [String] = []
+    @Published var positions: [Position] = []
     @Published var loadState: LoadState = .none
     let moveNextStep: () -> Void
     
@@ -18,7 +18,7 @@ class PositionInfoViewModel: ObservableObject {
     }
     
     
-    func positionTapped(position: String) {
+    func positionTapped(position: Position) {
         if let index = positions.firstIndex(where: { $0 == position }) {
             positions.remove(at: index)
         } else {

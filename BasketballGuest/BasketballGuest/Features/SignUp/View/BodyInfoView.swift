@@ -22,60 +22,7 @@ struct BodyInfoView: View {
                     .font(.regular18)
                     .foregroundStyle(.secondary)
                 
-                VStack {
-                    UserBodyInfoHeaderView(title: "신장") {
-                        viewModel.heightInputModeChange()
-                    }
-                    if viewModel.isHeightPickerMode {
-                        Picker("신장", selection: $viewModel.height) {
-                            ForEach(viewModel.heightRange, id: \.self) { height in
-                                Text("\(height)cm").tag(height)
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                    } else {
-                        UserBodyInfoTextFieldView(
-                            unit: "cm",
-                            range: viewModel.heightRange,
-                            text: $viewModel.heightText
-                        ) {
-                            viewModel.isValidateBodyInfo()
-                        }
-                        
-                        if !viewModel.heightErrorMessage.isEmpty {
-                            Text(viewModel.heightErrorMessage)
-                                .foregroundStyle(.red)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    }
-                }
-                .animation(.smooth, value: viewModel.isHeightPickerMode)
-                
-                VStack {
-                    UserBodyInfoHeaderView(title: "체중") {
-                        viewModel.weightInputModeChange()
-                    }
-                    if viewModel.isWeightPickerMode {
-                        Picker("체중", selection: $viewModel.weight) {
-                            ForEach(viewModel.weightRange, id: \.self) { weight in
-                                Text("\(weight)kg").tag(weight)
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                    } else {
-                        UserBodyInfoTextFieldView(
-                            unit: "kg",
-                            range: viewModel.weightRange,
-                            text: $viewModel.weightText
-                        ) {
-                            viewModel.isValidateBodyInfo()
-                        }
-                        if !viewModel.weightErroMessage.isEmpty {
-                            Text(viewModel.weightErroMessage)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                        }
-                    }
-                }
+                UserBodyInputSection(viewModel: viewModel)
                 
                 BorderButton(buttonText: .jump) {
                     viewModel.skip()
@@ -93,6 +40,7 @@ struct BodyInfoView: View {
 
 struct UserBodyInfoHeaderView: View {
     
+    @State private var isScrollMode: Bool = true
     let title: String
     let action: () -> Void
     
@@ -106,11 +54,76 @@ struct UserBodyInfoHeaderView: View {
             Text(title)
                 .font(.medium16)
             Spacer()
-            Button(action: action) {
-                Text("직접입력")
+            Button {
+                isScrollMode.toggle()
+                action()
+            } label : {
+                Text(isScrollMode ? "직접입력" : "스크롤")
                     .font(.medium16)
             }
         }
+    }
+}
+
+struct UserBodyInputSection: View {
+    @ObservedObject var viewModel: BodyInfoViewModel
+    var body: some View {
+        VStack {
+            UserBodyInfoHeaderView(title: "신장") {
+                viewModel.heightInputModeChange()
+            }
+            if viewModel.isHeightPickerMode {
+                Picker("신장", selection: $viewModel.height) {
+                    ForEach(viewModel.heightRange, id: \.self) { height in
+                        Text("\(height)cm").tag(height)
+                    }
+                }
+                .pickerStyle(.wheel)
+            } else {
+                UserBodyInfoTextFieldView(
+                    unit: "cm",
+                    range: viewModel.heightRange,
+                    text: $viewModel.heightText
+                ) {
+                    viewModel.isValidateBodyInfo()
+                }
+                
+                if !viewModel.heightErrorMessage.isEmpty {
+                    Text(viewModel.heightErrorMessage)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+        }
+        .animation(.smooth, value: viewModel.isHeightPickerMode)
+        
+        VStack {
+            UserBodyInfoHeaderView(title: "체중") {
+                viewModel.weightInputModeChange()
+            }
+            if viewModel.isWeightPickerMode {
+                Picker("체중", selection: $viewModel.weight) {
+                    ForEach(viewModel.weightRange, id: \.self) { weight in
+                        Text("\(weight)kg").tag(weight)
+                    }
+                }
+                .pickerStyle(.wheel)
+            } else {
+                UserBodyInfoTextFieldView(
+                    unit: "kg",
+                    range: viewModel.weightRange,
+                    text: $viewModel.weightText
+                ) {
+                    viewModel.isValidateBodyInfo()
+                }
+                if !viewModel.weightErroMessage.isEmpty {
+                    Text(viewModel.weightErroMessage)
+                        .foregroundStyle(.red)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+        }
+        
     }
 }
 

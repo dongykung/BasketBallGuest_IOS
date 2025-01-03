@@ -12,7 +12,7 @@ struct PositionInfoView: View {
     @ObservedObject private var viewModel: PositionInfoViewModel
     @Binding private var loadState: LoadState
     @Binding private var toast: Toast?
-    let positions = ["슈팅 가드", "포인트 가드", "스몰 포워드", "파워 포워드", "센터"]
+    let positions = Position.allCases
     private var columns: [GridItem] = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -40,7 +40,7 @@ struct PositionInfoView: View {
             LazyVGrid(columns: columns) {
                 ForEach(positions, id: \.self) { position in
                     PositionButton(
-                        position: position,
+                        position: position.rawValue,
                         selected: viewModel.positions.contains(where: { $0 == position })
                     ) {
                         viewModel.positionTapped(position: position)
