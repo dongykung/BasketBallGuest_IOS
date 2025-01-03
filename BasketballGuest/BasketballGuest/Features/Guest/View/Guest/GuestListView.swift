@@ -31,19 +31,15 @@ struct GuestListView: View {
     var body: some View {
         ScrollView {
             LazyVStack(pinnedViews: [.sectionHeaders]) {
-                if viewModel.guestPost.isEmpty {
-                    Text("결과가 없습니다.")
-                } else {
-                    ForEach(viewModel.guestPost, id: \.documentId) { post in
-                        GuestListItemView(post: post) {
-                            path.append(post)
-                        }
-                        .onAppear {
-                            viewModel.loadMoreIfNeeded(currentPost: post)
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 6)
+                ForEach(viewModel.guestPost, id: \.documentId) { post in
+                    GuestListItemView(post: post) {
+                        path.append(post)
                     }
+                    .onAppear {
+                        viewModel.loadMoreIfNeeded(currentPost: post)
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 6)
                 }
             }
             .padding(.top, headerHeight)
@@ -74,6 +70,11 @@ struct GuestListView: View {
             }
         }
         .coordinateSpace(name: "SCROLL")
+        .overlay {
+            if viewModel.guestPost.isEmpty {
+                Text("결과가 없습니다.")
+            }
+        }
         .overlay(alignment: .top) {
             headerView
                 .anchorPreference(key: HeaderBoundsKey.self, value: .bounds) { $0 }
