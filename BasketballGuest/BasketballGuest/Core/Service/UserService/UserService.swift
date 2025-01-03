@@ -12,6 +12,8 @@ import Foundation
 protocol UserService {
     func uploadUserData(user: UserDTO) async throws
     func fetchUserData(userId: String) async throws -> UserDTO
+    func updateProfileImage(urlString: String, myUid: String) async throws
+    func updateBodyInfo(height: Int, weight: Int, myUid: String) async throws
 }
 
 final class UserServiceImpl: UserService {
@@ -44,5 +46,20 @@ final class UserServiceImpl: UserService {
         }
     }
     
-}
+    func updateProfileImage(urlString: String, myUid: String) async throws {
+        do {
+            try await db.collection("User").document(myUid).updateData(["profileImageUrl": urlString])
+        } catch {
+            throw  PhotoError.uploadError
+        }
+    }
     
+    func updateBodyInfo(height: Int, weight: Int, myUid: String) async throws {
+        do {
+            try await db.collection("User").document(myUid).updateData(["height": height, "weight": weight])
+        } catch {
+            throw error
+        }
+    }
+}
+
