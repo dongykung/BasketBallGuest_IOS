@@ -14,6 +14,8 @@ protocol UserService {
     func fetchUserData(userId: String) async throws -> UserDTO
     func updateProfileImage(urlString: String, myUid: String) async throws
     func updateBodyInfo(height: Int, weight: Int, myUid: String) async throws
+    func deleteBodyInfo(myUid: String) async throws
+    func updatePosition(position: [String], myUid: String) async throws
 }
 
 final class UserServiceImpl: UserService {
@@ -57,6 +59,22 @@ final class UserServiceImpl: UserService {
     func updateBodyInfo(height: Int, weight: Int, myUid: String) async throws {
         do {
             try await db.collection("User").document(myUid).updateData(["height": height, "weight": weight])
+        } catch {
+            throw error
+        }
+    }
+    
+    func deleteBodyInfo(myUid: String) async throws {
+        do {
+            try await db.collection("User").document(myUid).updateData(["height": FieldValue.delete(), "weight": FieldValue.delete()])
+        } catch {
+            throw error
+        }
+    }
+    
+    func updatePosition(position: [String], myUid: String) async throws {
+        do {
+            try await db.collection("User").document(myUid).updateData(["positions": position])
         } catch {
             throw error
         }
