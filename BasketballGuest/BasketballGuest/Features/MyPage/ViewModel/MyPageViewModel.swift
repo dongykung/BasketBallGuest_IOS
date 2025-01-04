@@ -107,6 +107,41 @@ class MyPageViewModel: ObservableObject {
         }
     }
     
+    func hideBodyInfo() async {
+        guard let myUid = Auth.auth().currentUser?.uid else { return }
+        if user?.height != nil || user?.weight != nil {
+            await updateUpdateLoadState(state: .loading)
+            do {
+                try await userService.deleteBodyInfo(myUid: myUid)
+                DispatchQueue.main.async {
+                    self.user?.height = nil
+                    self.user?.weight = nil
+                    self.updateLoadState = .completed
+                }
+            } catch {
+                await updateUpdateLoadState(state: .failed)
+            }
+        } else {
+            await showToast(msg: "이미 숨김 설정이 되어있습니다.")
+        }
+    }
+    
+    func updatePosition(positions: [Position]) async {
+        guard let myUid = Auth.auth().currentUser?.uid else { return }
+        await updateUpdateLoadState(state: .loading)
+        do {
+            let updatePosition = positions.map { $0.rawValue }
+            try await userService.updatePosition(position: updatePosition, myUid: myUid)
+            DispatchQueue.main.async {
+                self.user?.positions = positions
+                self.updateLoadState = .completed
+            }
+        } catch {
+            await updateUpdateLoadState(state: .failed)
+            await showToast(msg: "포지션 변경에 실패했습니다 다시 시도해 주세요.")
+        }
+    }
+    
     @MainActor
     func updateUser(userDTO: UserDTO) {
         user = userDTO

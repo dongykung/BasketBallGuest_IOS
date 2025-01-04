@@ -11,7 +11,8 @@ import PhotosUI
 struct MyPageView: View {
     @StateObject private var viewModel: MyPageViewModel = MyPageViewModel()
     @State private var selectedPhotos: PhotosPickerItem?
-    @State private var heightChangeSheet: Bool = false
+    @State private var isHeightChangeSheet: Bool = false
+    @State private var isPositionChangeSheet: Bool = false
     @EnvironmentObject private var authStore: AuthStore
     var body: some View {
         NavigationStack {
@@ -31,7 +32,10 @@ struct MyPageView: View {
                             .padding(.bottom)
                     }
                     profileEditButotn
-                    heightChangeButton
+                    bodyChangeButton
+                    bodyHideButton
+                    positionChangeButton
+                    logoutButton
                 case .failed:
                     ErrorView {
                         Task {
@@ -41,7 +45,15 @@ struct MyPageView: View {
                 }
                 Spacer()
             }
-            .sheet(isPresented: $heightChangeSheet) {
+            .sheet(isPresented: $isPositionChangeSheet) {
+                PositionChangeSheet(position: viewModel.user?.positions ?? []) { positions in
+                    Task {
+                        await viewModel.updatePosition(positions: positions)
+                    }
+                }
+                    .presentationDetents([.fraction(0.4)])
+            }
+            .sheet(isPresented: $isHeightChangeSheet) {
                 BodyInfoChangeSheet(
                     height: viewModel.user?.height,
                     weight: viewModel.user?.weight
@@ -95,12 +107,54 @@ struct MyPageView: View {
     }
     
     @ViewBuilder
-    private var heightChangeButton: some View {
+    private var bodyChangeButton: some View {
         Button {
-            heightChangeSheet.toggle()
+            isHeightChangeSheet.toggle()
         } label: {
             Text("신장/체중 설정")
                 .modifier(UserUpdateModifier())
+                .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private var bodyHideButton: some View {
+        Button {
+            Task {
+                await viewModel.hideBodyInfo()
+            }
+        } label: {
+            Text("신장/체중 숨기기")
+                .modifier(UserUpdateModifier())
+                .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private var positionChangeButton: some View {
+        Button {
+            isPositionChangeSheet.toggle()
+        } label: {
+            Text("포지션 변경")
+                .modifier(UserUpdateModifier())
+                .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private var logoutButton: some View {
+        Button {
+            authStore.logout()
+        } label: {
+            Text("로그아웃")
+                .foregroundStyle(.red)
+                .padding(.vertical, 12)
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(.gray, lineWidth: 1)
+                }
                 .padding(.horizontal)
         }
     }
