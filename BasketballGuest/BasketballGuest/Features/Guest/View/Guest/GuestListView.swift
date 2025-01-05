@@ -71,7 +71,7 @@ struct GuestListView: View {
         }
         .coordinateSpace(name: "SCROLL")
         .overlay {
-            if viewModel.guestPost.isEmpty {
+            if viewModel.guestPost.isEmpty && viewModel.loadState == .completed {
                 Text("결과가 없습니다.")
             }
         }
