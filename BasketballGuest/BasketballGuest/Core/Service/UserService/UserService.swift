@@ -16,6 +16,7 @@ protocol UserService {
     func updateBodyInfo(height: Int, weight: Int, myUid: String) async throws
     func deleteBodyInfo(myUid: String) async throws
     func updatePosition(position: [String], myUid: String) async throws
+    func fetchMyParticipant(myUid: String) async throws -> [String]
 }
 
 final class UserServiceImpl: UserService {
@@ -79,5 +80,15 @@ final class UserServiceImpl: UserService {
             throw error
         }
     }
+    
+    func fetchMyParticipant(myUid: String) async throws -> [String] {
+        do {
+            let doc = try await db.collection("User").document(myUid).collection("participant").getDocuments().documents
+            return doc.compactMap { $0.documentID }
+        } catch {
+            throw error
+        }
+    }
 }
+
 
