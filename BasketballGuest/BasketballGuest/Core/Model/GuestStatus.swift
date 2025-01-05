@@ -20,3 +20,9 @@ struct UserStatus: Codable {
     @DocumentID var documentId: String?
     var status: GuestStatus
 }
+
+struct MyParticipantStatus: Codable, Identifiable {
+    var id: String = UUID().uuidString
+    var post: GuestPost
+    var status: GuestStatus
+}
