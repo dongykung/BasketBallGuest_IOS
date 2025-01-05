@@ -28,6 +28,12 @@ struct MainTabView: View {
                 .badge(chatRoomStore.totalUnreadCount)
                 .environmentObject(chatRoomStore)
             
+            ManageView()
+                .tabItem {
+                    Label("관리", systemImage: "list.bullet.clipboard.fill")
+                        .bold()
+                }
+            
             
             MyPageView()
                 .tabItem {
