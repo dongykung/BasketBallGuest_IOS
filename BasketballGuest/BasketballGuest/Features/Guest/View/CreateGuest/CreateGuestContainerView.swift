@@ -11,6 +11,7 @@ struct CreateGuestContainerView: View {
     
     @StateObject private var viewModel: CreateGuestViewModel = CreateGuestViewModel()
     @Environment(\.dismiss) private var dismiss
+    let action: () -> Void
     
     var body: some View {
         NavigationStack {
@@ -60,6 +61,7 @@ struct CreateGuestContainerView: View {
             }
             .onChange(of: viewModel.loadState) { loadState in
                 if loadState == .completed {
+                    action()
                     dismiss()
                 }
             }
@@ -96,5 +98,5 @@ fileprivate struct CreateGuestTopBar: View {
 }
 
 #Preview {
-    CreateGuestContainerView()
+    CreateGuestContainerView() {}
 }

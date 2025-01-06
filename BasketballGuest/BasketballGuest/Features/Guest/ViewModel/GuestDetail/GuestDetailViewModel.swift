@@ -12,6 +12,7 @@ import FirebaseAuth
 class GuestDetailViewModel: ObservableObject {
     
     @Injected(\.userService) private var userService
+    @Injected(\.guestService) private var guestService
     @Injected(\.guestDetailService) private var guestDetailService
     @Published var post: GuestPost
     @Published var guestUser: UserDTO?
@@ -21,6 +22,7 @@ class GuestDetailViewModel: ObservableObject {
     @Published var userStatusState: LoadState = .none
     
     @Published var toast: Toast?
+    @Published var deletePost: Bool = false
     private var path: NavigationPath
     
     init(path: NavigationPath, post: GuestPost) {
@@ -114,6 +116,18 @@ class GuestDetailViewModel: ObservableObject {
         }
     }
     
+    func deletePost() async {
+        if Auth.auth().currentUser?.uid != post.writerUid {
+            return
+        }
+        do {
+            try await guestService.deletePost(postId: post.documentId ?? "")
+            await updateDeletePost(state: true)
+        } catch {
+            await showToast(msg: "삭제에 실패했습니다 다시 시도해 주세요.")
+        }
+    }
+    
     @MainActor
     func updateUserState(state: GuestStatus) {
         userState = state
@@ -137,5 +151,10 @@ class GuestDetailViewModel: ObservableObject {
     @MainActor
     func updatePost(newPost: GuestPost) {
         post = newPost
+    }
+    
+    @MainActor
+    func updateDeletePost(state: Bool) {
+        deletePost = state
     }
 }

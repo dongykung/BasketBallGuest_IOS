@@ -36,10 +36,20 @@ struct GuestView: View {
             .navigationTitle("게스트")
             .navigationBarTitleDisplayMode(.inline)
             .fullScreenCover(isPresented: $isCreateGuest) {
-                CreateGuestContainerView()
+                CreateGuestContainerView() {
+                    Task {
+                        viewModel.resetPaging()
+                        await viewModel.fetchGuestPost()
+                    }
+                }
             }
             .navigationDestination(for: GuestPost.self) { post in
-                GuestDetailView(viewModel: .init(path: path, post: post))
+                GuestDetailView(viewModel: .init(path: path, post: post)) {
+                    Task {
+                        viewModel.resetPaging()
+                        await viewModel.fetchGuestPost()
+                    }
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

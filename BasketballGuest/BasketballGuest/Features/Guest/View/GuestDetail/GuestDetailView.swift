@@ -13,9 +13,13 @@ struct GuestDetailView: View {
     
     @Environment(\.dismiss) private var dismiss
     @State var chatUser: UserDTO? = nil
-    @StateObject var viewModel: GuestDetailViewModel
     @State private var isManagementPage: Bool = false
-    
+    @State private var isOptionAlert: Bool = false
+    @State private var isConfirmAlert: Bool = false
+    @State private var isDeleteAlert: Bool = false
+    @StateObject var viewModel: GuestDetailViewModel
+    let action: () -> Void
+
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
@@ -100,12 +104,45 @@ struct GuestDetailView: View {
                             .bold()
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isOptionAlert.toggle()
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundStyle(.black)
+                    }
+                }
             }
             .task {
                 async let _ = viewModel.fetchUserInfo(userId: viewModel.post.writerUid)
                 async let _ = viewModel.fetchUserStatus(postId: viewModel.post.documentId ?? "", userId: viewModel.post.writerUid)
             }
-            
+            .confirmationDialog("옵션", isPresented: $isOptionAlert) {
+                Button("신고") { isConfirmAlert.toggle() }
+                Button("삭제하기") { isDeleteAlert.toggle() }
+                Button("취소", role: .cancel) {}
+            }
+            .alert(isPresented: $isConfirmAlert) {
+                let okButton = Alert.Button.default(Text("확인")) {}
+                return Alert(title: Text("신고를 완료했습니다."), dismissButton: okButton)
+            }
+            .alert(isPresented: $isDeleteAlert) {
+                let removeBtn = Alert.Button.destructive(Text("삭제하기")) {
+                    Task {
+                        await viewModel.deletePost()
+                    }
+                }
+                let cancelBtn = Alert.Button.cancel(Text("취소")) {
+                    
+                }
+                return Alert(title: Text("게시글 삭제"), message: Text("해당 게시글을 삭제하시겠습니까?"), primaryButton: removeBtn, secondaryButton: cancelBtn)
+            }
+            .onChange(of: viewModel.deletePost) { delete in
+                if delete {
+                    action()
+                    dismiss()
+                }
+            }
         }
     }
 }
@@ -178,6 +215,6 @@ struct UserInfoSection: View {
 
 #Preview {
     NavigationStack {
-        GuestDetailView(viewModel: .init(path: .init(), post: dummyPost))
+        GuestDetailView(viewModel: .init(path: .init(), post: dummyPost)) {}
     }
 }
