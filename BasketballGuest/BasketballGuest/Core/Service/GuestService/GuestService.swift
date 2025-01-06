@@ -12,6 +12,7 @@ protocol GuestService {
     func uploadGuestPost(guestPost: GuestPost) async throws
     func getDefaultGuestPost(with filter: GuestFilter, lastDocument: DocumentSnapshot?) async throws -> (posts: [GuestPost], lastDocument: DocumentSnapshot?)
     func getMyPost(myUid: String) async throws -> [GuestPost]
+    func deletePost(postId: String) async throws
 }
 
 final class GuestServiceImpl: GuestService {
@@ -87,6 +88,14 @@ final class GuestServiceImpl: GuestService {
         do {
             let document = try await db.collection("Guest").whereField("writerUid", isEqualTo: myUid).getDocuments().documents
             return try document.compactMap { try $0.data(as: GuestPost.self) }
+        } catch {
+            throw error
+        }
+    }
+    
+    func deletePost(postId: String) async throws {
+        do {
+            try await db.collection("Guest").document(postId).delete()
         } catch {
             throw error
         }
