@@ -38,7 +38,11 @@ struct ManageView: View {
             }
             .toastView(toast: $viewModel.toast)
             .navigationDestination(for: GuestPost.self) { post in
-                GuestDetailView(viewModel: .init(path: path, post: post))
+                GuestDetailView(viewModel: .init(path: path, post: post)) {
+                    Task {
+                        await viewModel.fetchMyPost()
+                    }
+                }
             }
         }
     }

@@ -91,7 +91,7 @@ class ManageViewModel: ObservableObject {
     
     @MainActor
     func updateMyPost(myPosts: [GuestPost]) {
-        myPost = myPosts
+        myPost = myPosts.sorted(by: { $0.date > $1.date})
     }
     
     @MainActor
