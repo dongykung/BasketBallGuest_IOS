@@ -10,3 +10,5 @@
 ## 폴더구조
 <img width="832" alt="image" src="https://github.com/user-attachments/assets/b561e94d-9425-4d37-a84d-c103bd32f2f8" />
 
+## 시연영상
+https://www.youtube.com/watch?v=YIxeC1jFJ6U&feature=youtu.be
